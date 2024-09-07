@@ -1,64 +1,128 @@
 import React, { useState } from "react";
-import "./index.css"; // Import the CSS file
+import "./index.css";
+
+const quizQuestions = [
+  {
+    question: "What is the capital of France?",
+    options: ["Paris", "London", "Rome", "Berlin"],
+    answer: "Paris",
+  },
+  {
+    question: "Which planet is known as the Red Planet?",
+    options: ["Earth", "Mars", "Jupiter", "Venus"],
+    answer: "Mars",
+  },
+  {
+    question: "Who wrote 'To be, or not to be'?",
+    options: ["Shakespeare", "Hemingway", "Frost", "Poe"],
+    answer: "Shakespeare",
+  },
+  {
+    question: "What is the largest ocean on Earth?",
+    options: [
+      "Atlantic Ocean",
+      "Indian Ocean",
+      "Arctic Ocean",
+      "Pacific Ocean",
+    ],
+    answer: "Pacific Ocean",
+  },
+  {
+    question: "Which element has the chemical symbol 'O'?",
+    options: ["Oxygen", "Gold", "Osmium", "Oganesson"],
+    answer: "Oxygen",
+  },
+  {
+    question: "In which year did the Titanic sink?",
+    options: ["1912", "1905", "1898", "1923"],
+    answer: "1912",
+  },
+  {
+    question: "Who painted the Mona Lisa?",
+    options: [
+      "Vincent van Gogh",
+      "Leonardo da Vinci",
+      "Pablo Picasso",
+      "Claude Monet",
+    ],
+    answer: "Leonardo da Vinci",
+  },
+  {
+    question: "What is the capital city of Japan?",
+    options: ["Tokyo", "Kyoto", "Osaka", "Hiroshima"],
+    answer: "Tokyo",
+  },
+  {
+    question:
+      "Which organ in the human body is primarily responsible for filtering blood?",
+    options: ["Liver", "Heart", "Kidneys", "Lungs"],
+    answer: "Kidneys",
+  },
+  {
+    question: "What is the smallest prime number?",
+    options: ["1", "2", "3", "5"],
+    answer: "2",
+  },
+];
 
 function App() {
-  const [todos, setTodos] = useState([]);
-  const [input, setInput] = useState("");
+  const [isQuizStarted, setIsQuizStarted] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [isQuizFinished, setIsQuizFinished] = useState(false);
 
-  const handleAddClick = () => {
-    if (input.trim()) {
-      setTodos([...todos, { text: input, completed: false }]);
-      setInput("");
+  const startQuiz = () => {
+    setIsQuizStarted(true);
+    setCurrentQuestionIndex(0);
+    setScore(0);
+    setIsQuizFinished(false);
+  };
+
+  const handleAnswerClick = (selectedOption) => {
+    if (selectedOption === quizQuestions[currentQuestionIndex].answer) {
+      setScore(score + 1);
     }
-  };
 
-  const handleToggleComplete = (index) => {
-    const newTodos = todos.map((todo, i) =>
-      i === index ? { ...todo, completed: !todo.completed } : todo
-    );
-    setTodos(newTodos);
-  };
-
-  const handleDeleteClick = (index) => {
-    setTodos(todos.filter((_, i) => i !== index));
+    if (currentQuestionIndex < quizQuestions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      setIsQuizFinished(true);
+    }
   };
 
   return (
     <div className="app">
-      <h1 className="title">To-Do List</h1>
-      <div className="input-container">
-        <input
-          className="input"
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Add a new task"
-        />
-        <button className="add-button" onClick={handleAddClick}>
-          Add
-        </button>
-      </div>
-      <ul className="todo-list">
-        {todos.map((todo, index) => (
-          <li
-            key={index}
-            className={`todo-item ${todo.completed ? "completed" : ""}`}
-          >
-            <span
-              className="todo-text"
-              onClick={() => handleToggleComplete(index)}
-            >
-              {todo.text}
-            </span>
-            <button
-              className="delete-button"
-              onClick={() => handleDeleteClick(index)}
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+      {!isQuizStarted && (
+        <div className="start-screen">
+          <h1>Welcome to the Quiz!</h1>
+          <button onClick={startQuiz}>Start Quiz</button>
+        </div>
+      )}
+
+      {isQuizStarted && !isQuizFinished && (
+        <div className="quiz-screen">
+          <h2>{quizQuestions[currentQuestionIndex].question}</h2>
+          <div className="options">
+            {quizQuestions[currentQuestionIndex].options.map(
+              (option, index) => (
+                <button key={index} onClick={() => handleAnswerClick(option)}>
+                  {option}
+                </button>
+              )
+            )}
+          </div>
+        </div>
+      )}
+
+      {isQuizFinished && (
+        <div className="result-screen">
+          <h2>Quiz Finished!</h2>
+          <p>
+            Your Score: {score} / {quizQuestions.length}
+          </p>
+          <button onClick={startQuiz}>Play Again</button>
+        </div>
+      )}
     </div>
   );
 }
